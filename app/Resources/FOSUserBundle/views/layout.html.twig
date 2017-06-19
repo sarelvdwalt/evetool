@@ -1,0 +1,14 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}ET: Login Please!{% endblock %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-xs-1 col-md-4"></div>
+        <div class="col-xs-10 col-md-4">
+            {% block fos_user_content %}{% endblock %}
+        </div>
+        <div class="col-xs-1 col-md-4"></div>
+    </div>
+{% endblock body %}
