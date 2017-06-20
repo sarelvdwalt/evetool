@@ -10,10 +10,11 @@
         <link rel="stylesheet" href="{{ asset('bower_components/bootstrap/dist/css/bootstrap-theme.min.css') }}">
     </head>
     <body>
+
+        {% include "topnav.html.twig" %}
+
         <div class="container-fluid">
-            {#<div class="row">#}
-                {% block body %}{% endblock %}
-            {#</div>#}
+            {% block body %}{% endblock %}
         </div>
         {% block javascripts %}{% endblock %}
         <script src="{{ asset('bower_components/jquery/dist/jquery.min.js') }}"></script>
