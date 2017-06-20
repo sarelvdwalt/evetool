@@ -24,6 +24,7 @@
         "friendsofsymfony/user-bundle": "~2.0",
         "guzzlehttp/guzzle": "6.2.*",
         "incenteev/composer-parameter-handler": "~2.0",
+        "sarelvdwalt/eve-swagger-esi-autogen": "^1.0",
         "sensio/distribution-bundle": "~4.0",
         "sensio/framework-extra-bundle": "^3.0.2",
         "symfony/monolog-bundle": "^3.0.2",
