@@ -59,6 +59,7 @@ class OAuthController extends Controller
             $toon->setId($characterID);
         }
 
+        $toon->setUser($this->getUser());
         $toon->setCharacterName($json['CharacterName']);
         $toon->setExpiresOn(new \DateTime($json['ExpiresOn']));
         $toon->setScopes($json['Scopes']);
