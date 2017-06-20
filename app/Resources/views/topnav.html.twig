@@ -47,16 +47,16 @@
                     </li>
 
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Character(s) <span class="caret"></span></a>
+                        {% if toon_count > 0 %}
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ toon_count }} character(s) <span class="caret"></span></a>
+                        {% else %}
+                            <a href="https://login.eveonline.com/oauth/authorize?response_type=code&redirect_uri={{ eve_redirect_uri }}&client_id={{ eve_client_id }}&scope=characterContactsRead publicData esi-planets.manage_planets.v1 esi-characters.read_contacts.v1">Add character...</a>
+                        {% endif %}
                         <ul class="dropdown-menu">
                             <li class="text-center"><a href="#"></a>
-                                <img src="https://image.eveonline.com/Character/3003981_64.jpg" alt="..." class="img-rounded">
-                            </li>
-                            <li class="text-center"><a href="#"></a>
-                                <img src="https://image.eveonline.com/Character/3003981_64.jpg" alt="..." class="img-rounded">
-                            </li>
-                            <li class="text-center"><a href="#"></a>
-                                <img src="https://image.eveonline.com/Character/3003981_64.jpg" alt="..." class="img-rounded">
+                            {% for toon in app.user.toons %}
+                                <img src="https://image.eveonline.com/Character/{{ toon.id }}_32.jpg" alt="..." class="img-rounded">
+                            {% endfor %}
                             </li>
                             <li role="separator" class="divider"></li>
                             <li><a href="https://login.eveonline.com/oauth/authorize?response_type=code&redirect_uri={{ eve_redirect_uri }}&client_id={{ eve_client_id }}&scope=characterContactsRead publicData esi-planets.manage_planets.v1 esi-characters.read_contacts.v1">Add character...</a></li>
