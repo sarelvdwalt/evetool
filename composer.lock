@@ -4,8 +4,63 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "809d5754c729bc236fac434b3ce5334d",
+    "content-hash": "bf70ad0a1604125dbbac9c202fcd2a50",
     "packages": [
+        {
+            "name": "afrihost/base-command-bundle",
+            "version": "v0.6.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/afrihost/BaseCommandBundle.git",
+                "reference": "294e8f4f2bb55c5c3fe84e4158b3c994b517627a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/afrihost/BaseCommandBundle/zipball/294e8f4f2bb55c5c3fe84e4158b3c994b517627a",
+                "reference": "294e8f4f2bb55c5c3fe84e4158b3c994b517627a",
+                "shasum": ""
+            },
+            "require": {
+                "monolog/monolog": "~1.10",
+                "php": ">=5.3.3",
+                "symfony/symfony": "~2.6"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.8.*"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "Afrihost\\BaseCommandBundle\\": ""
+                },
+                "exclude-from-classmap": [
+                    "Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Afrihost Internet Service (Pty) Ltd",
+                    "email": "open-source@afrihost.com"
+                },
+                {
+                    "name": "Brad Mostert",
+                    "email": "open-source@afrihost.com"
+                }
+            ],
+            "description": "Afrihost’s ‘swiss-army-knife’ extension of Symfony’s ContainerAwareCommand that defines common reusable functionality (such as logging) across commands",
+            "homepage": "https://github.com/afrihost/BaseCommandBundle",
+            "keywords": [
+                "locking",
+                "logging",
+                "monolog",
+                "symfony command"
+            ],
+            "time": "2016-09-05T16:53:45+00:00"
+        },
         {
             "name": "doctrine/annotations",
             "version": "v1.4.0",
