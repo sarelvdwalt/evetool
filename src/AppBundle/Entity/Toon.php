@@ -28,6 +28,11 @@ class Toon extends BaseEntity
     private $user;
 
     /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Colony", mappedBy="toon")
+     */
+    private $colonies;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="character_name", type="string", length=255)
@@ -131,7 +136,7 @@ class Toon extends BaseEntity
 
     /**
      * @var string
-     * @ORM\Column(name="expires_in", type="string", length=255)
+     * @ORM\Column(name="esi_refresh_token", type="string", length=255)
      */
     private $esiRefreshToken;
 
@@ -319,5 +324,46 @@ class Toon extends BaseEntity
     public function getUser()
     {
         return $this->user;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->colonies = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add colony
+     *
+     * @param \AppBundle\Entity\Colony $colony
+     *
+     * @return Toon
+     */
+    public function addColony(\AppBundle\Entity\Colony $colony)
+    {
+        $this->colonies[] = $colony;
+
+        return $this;
+    }
+
+    /**
+     * Remove colony
+     *
+     * @param \AppBundle\Entity\Colony $colony
+     */
+    public function removeColony(\AppBundle\Entity\Colony $colony)
+    {
+        $this->colonies->removeElement($colony);
+    }
+
+    /**
+     * Get colonies
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getColonies()
+    {
+        return $this->colonies;
     }
 }
