@@ -54,10 +54,8 @@ abstract class BaseEntity
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps(PreUpdateEventArgs $preUpdateEventArgs)
+    public function updatedTimestamps()
     {
-//        VarDumper::dump($preUpdateEventArgs->getEntityChangeSet());exit;
-
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
