@@ -34,6 +34,11 @@
 
             ga('create', 'UA-35507776-5', 'auto');
             ga('send', 'pageview');
+
+            //TODO: a poor attempt to track errors, will need to do something better here
+            window.addEventListener('error', function(e) {
+                console.log(e);
+            }, true);
         </script>
     </body>
 </html>
