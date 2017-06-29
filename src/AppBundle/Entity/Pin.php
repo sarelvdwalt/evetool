@@ -28,6 +28,13 @@ class Pin extends BaseEntity
     private $colony;
 
     /**
+     * @var PinExtractorDetail
+     *
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\PinExtractorDetail", mappedBy="pin")
+     */
+    private $pin_extractor_detail;
+
+    /**
      * @var int
      *
      * @ORM\Column(name="schematic_id", type="integer", nullable=true)
@@ -291,5 +298,29 @@ class Pin extends BaseEntity
         $this->id = $id;
 
         return $this;
+    }
+
+    /**
+     * Set pinExtractorDetail
+     *
+     * @param \AppBundle\Entity\PinExtractorDetail $pinExtractorDetail
+     *
+     * @return Pin
+     */
+    public function setPinExtractorDetail(\AppBundle\Entity\PinExtractorDetail $pinExtractorDetail = null)
+    {
+        $this->pin_extractor_detail = $pinExtractorDetail;
+
+        return $this;
+    }
+
+    /**
+     * Get pinExtractorDetail
+     *
+     * @return \AppBundle\Entity\PinExtractorDetail
+     */
+    public function getPinExtractorDetail()
+    {
+        return $this->pin_extractor_detail;
     }
 }
