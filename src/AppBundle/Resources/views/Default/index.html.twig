@@ -1,4 +1,61 @@
 {% extends "::base.standard.html.twig" %}
 
 {% block body %}
+    <div class="row">
+        <div class="col-md-8">
+            <table class="table table-responsive table-condensed">
+                <tr>
+                    <th>#</th>
+                    <th>Toon</th>
+                    <th>System</th>
+                    <th>Planet</th>
+                    <th>Type</th>
+                    <th>Install Time</th>
+                    <th>Expiry Time</th>
+                    <th>Cycle Time</th>
+                    <th>Qty / cycle</th>
+                    <th>Time to end</th>
+                    <th>Actions</th>
+                </tr>
+                {% for row in colony_view %}
+                    <tr class="{% if row.unix_diff <= 0 %}
+            {{ "danger" }}
+                {% endif %}">
+                        <td>{{ loop.index }}</td>
+                        <td>{{ row.character_name }}</td>
+                        <td>{{ row.solar_system_id }}</td>
+                        <td>{{ row.planet_id }}</td>
+                        <td>{{ row.planet_type }}</td>
+                        <td>{{ row.install_time }}</td>
+                        <td>{{ row.expiry_time }}</td>
+                        <td>{{ row.cycle_time }}</td>
+                        <td>{{ row.qty_per_cycle }}</td>
+                        <td>
+                            {% if row.diff_days > 2 %}
+                                {{ row.diff_days }} days
+                            {% else %}
+                                {{ row.diff_hours }} hours
+                            {% endif %}
+                            {% if row.time_till_end < 0 %}
+                                ago
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="#"><span class="glyphicon glyphicon-signal extraction-chart"
+                                              aria-hidden="true"
+                                              data-id="{{ row.pin_id }}"
+                                              data-toon="{{ row.character_name }}"
+                                ></span></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="col-md-4">
+            <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+        </div>
+    </div>
+
+    <script src="{{ asset('planet.extractor.chart.js') }}"></script>
+
 {% endblock body %}
