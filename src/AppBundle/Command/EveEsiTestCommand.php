@@ -132,6 +132,25 @@ class EveEsiTestCommand extends BaseCommand
 
 //                            exit;
 
+                            // Pin Extractor Detail (if it's an extractor type pin):
+                            if (null !== $one_pin->getExtractorDetails()) {
+                                $pinExtractorDetail = $em->getRepository('AppBundle:PinExtractorDetail')->findOneBy([
+                                    'pin' => $pin
+                                ]);
+
+                                if (is_null($pinExtractorDetail)) {
+                                    $pinExtractorDetail = new PinExtractorDetail();
+                                    $pinExtractorDetail->setPin($pin);
+                                }
+
+                                $pinExtractorDetail->setCycleTime($one_pin->getExtractorDetails()->getCycleTime());
+                                $pinExtractorDetail->setHeadRadius($one_pin->getExtractorDetails()->getHeadRadius());
+                                $pinExtractorDetail->setProductTypeId($one_pin->getExtractorDetails()->getProductTypeId());
+                                $pinExtractorDetail->setQtyPerCycle($one_pin->getExtractorDetails()->getQtyPerCycle());
+
+                                $em->persist($pinExtractorDetail);
+                            }
+
                             $em->persist($pin);
                         }
 
