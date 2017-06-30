@@ -154,7 +154,44 @@ class EveEsiTestCommand extends BaseCommand
                             $em->persist($pin);
                         }
 
-//                        exit;
+                        // Links:
+                        foreach ($planet_result->getLinks() as $link) {
+                            $pinLink = $em->getRepository('AppBundle:PinLink')->findOneBy([
+                                'destinationPinId' => $link->getDestinationPinId(),
+                                'sourcePinId' => $link->getSourcePinId()
+                            ]);
+
+                            if (!is_object($pinLink)) {
+                                $pinLink = new PinLink();
+                                $pinLink->setDestinationPinId($link->getDestinationPinId());
+                                $pinLink->setSourcePinId($link->getSourcePinId());
+                            }
+
+                            $pinLink->setLinkLevel($link->getLinkLevel());
+
+                            $em->persist($pinLink);
+                        }
+
+                        // Routes:
+                        foreach ($planet_result->getRoutes() as $route) {
+                            $pinRoute = $em->getRepository('AppBundle:PinRoute')->findOneBy([
+                                'routeId' => $route->getRouteId()
+                            ]);
+
+                            if (!is_object($pinRoute)) {
+                                $pinRoute = new PinRoute();
+                                $pinRoute->setRouteId($route->getRouteId());
+                            }
+
+                            $pinRoute->setContentTypeId($route->getContentTypeId());
+                            $pinRoute->setDestinationPinId($route->getDestinationPinId());
+                            $pinRoute->setQuantity($route->getQuantity());
+                            $pinRoute->setSourcePinId($route->getSourcePinId());
+
+                            $em->persist($pinRoute);
+
+                            //TODO: Deal with waypoints (just VarDump the route and you'll see it)
+                        }
 
                         $em->persist($colony);
                         $em->flush();
