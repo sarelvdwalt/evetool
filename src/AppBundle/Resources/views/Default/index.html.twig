@@ -3,7 +3,7 @@
 {% block body %}
     <div class="row">
         <div class="col-md-8">
-            <table class="table table-responsive table-condensed">
+            <table class="table table-responsive table-condensed table-hover">
                 <tr>
                     <th>#</th>
                     <th>Toon</th>
@@ -18,9 +18,7 @@
                     <th>Actions</th>
                 </tr>
                 {% for row in colony_view %}
-                    <tr class="{% if row.unix_diff <= 0 %}
-            {{ "danger" }}
-                {% endif %}">
+                    <tr class="{{ row.unix_diff <= 0 ? "danger" : row.unix_diff <= 3600*12  ? "warning" : "" }}">
                         <td>{{ loop.index }}</td>
                         <td>{{ row.character_name }}</td>
                         <td>{{ row.solar_system_id }}</td>
@@ -41,7 +39,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="#"><span class="glyphicon glyphicon-signal extraction-chart"
+                            <a href="#" onclick="return false;"><span class="glyphicon glyphicon-signal extraction-chart"
                                               aria-hidden="true"
                                               data-id="{{ row.pin_id }}"
                                               data-toon="{{ row.character_name }}"
@@ -51,7 +49,7 @@
                 {% endfor %}
             </table>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4" style="position:fixed; right:0px;">
             <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
         </div>
     </div>

@@ -10,9 +10,11 @@
         {#<link rel="stylesheet" href="{{ asset('bower_components/bootstrap/dist/css/bootstrap-theme.min.css') }}">#}
         <link rel="stylesheet" href="{{ asset('bower_components/bootstrap/dist/css/darkly.theme.min.css') }}">
     </head>
-    <body>
+    <body style="padding-top: 70px;">
 
         {% include "topnav.html.twig" %}
+
+        <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
 
         <script src="{{ asset('node_modules/highcharts/highcharts.js') }}"></script>
         {#<script src="{{ asset('node_modules/highcharts/js/modules/exporting.js') }}"></script>#}
@@ -40,6 +42,49 @@
             window.addEventListener('error', function(e) {
                 console.log(e);
             }, true);
+        </script>
+
+        <script>
+
+            // Enable pusher logging - don't include this in production
+            Pusher.logToConsole = true;
+
+            var pusher = new Pusher('bf7ea183e4c3ef2f62cc', {
+                cluster: 'eu',
+                encrypted: true
+            });
+
+            var channel = pusher.subscribe('my-channel');
+            channel.bind('my-event', function(data) {
+                notifyMe(data.message);
+            });
+
+            // request permission on page load
+            document.addEventListener('DOMContentLoaded', function () {
+                if (Notification.permission !== "granted")
+                    Notification.requestPermission();
+            });
+
+            function notifyMe(message) {
+                if (!Notification) {
+                    alert('Desktop notifications not available in your browser. Try Chromium.');
+                    return;
+                }
+
+                if (Notification.permission !== "granted")
+                    Notification.requestPermission();
+                else {
+                    var notification = new Notification('EVE Tool Notification', {
+                        icon: '{{ asset('eve-icon.png') }}',
+                        body: message,
+                    });
+
+                    notification.onclick = function () {
+                        window.focus();
+                    };
+                }
+            }
+
         </script>
     </body>
 </html>
