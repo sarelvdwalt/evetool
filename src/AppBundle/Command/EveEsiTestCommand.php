@@ -68,6 +68,17 @@ class EveEsiTestCommand extends BaseCommand
                 foreach ($user->getToons() as $toon) {
                     /** @var Toon $toon */
 
+                    $dbSideStack = array();
+
+                    $tmp = $em->getRepository('AppBundle:Colony')->findBy([
+                        'toon' => $toon
+                    ]);
+
+                    foreach ($tmp as $tmpOldColony) {
+                        /** @var Colony $tmpOldColony */
+                        $dbSideStack['colonies'][$tmpOldColony->getPlanetId()] = $tmpOldColony;
+                    }
+
                     $this->getLogger()->info('Toon: #' . $toon->getId() . ' "' . $toon->getCharacterName() . '"');
 
                     $this->refreshToken($toon, $em);
@@ -81,14 +92,14 @@ class EveEsiTestCommand extends BaseCommand
                     $this->getLogger()->info('Getting Colonies...');
 
                     foreach ($result as $one_colony) {
-                        $colony = $em->getRepository('AppBundle:Colony')->findOneBy([
-                            'toon' => $toon,
-                            'planetId' => $one_colony->getPlanetId()
-                        ]);
+                        $colony = $dbSideStack['colonies'][$one_colony->getPlanetId()];
 
                         if (is_null($colony)) {
                             $colony = new Colony();
                             $colony->setToon($toon);
+                        } else {
+                            // Ensure that we are not left with this "found" colony in the list at the end
+                            unset($dbSideStack['colonies'][$one_colony->getPlanetId()]);
                         }
                         $colony->setLastUpdate($one_colony->getLastUpdate());
                         $colony->setNumPins($one_colony->getNumPins());
