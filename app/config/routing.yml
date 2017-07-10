@@ -1,7 +1,7 @@
-evesde:
-    resource: "@EVESDEBundle/Controller/"
-    type:     annotation
-    prefix:   /
+#evesde:
+#    resource: "@EVESDEBundle/Controller/"
+#    type:     annotation
+#    prefix:   /
 
 app:
     resource: '@AppBundle/Controller/'
