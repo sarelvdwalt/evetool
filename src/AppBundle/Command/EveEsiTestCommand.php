@@ -5,15 +5,20 @@ namespace AppBundle\Command;
 use Afrihost\BaseCommandBundle\Command\BaseCommand;
 use AppBundle\Entity\Colony;
 use AppBundle\Entity\Pin;
+use AppBundle\Entity\PinExtractorDetail;
+use AppBundle\Entity\PinLink;
+use AppBundle\Entity\PinRoute;
 use AppBundle\Entity\Toon;
 use AppBundle\Entity\User;
 use Doctrine\Common\Persistence\ObjectManager;
 use GuzzleHttp\Client;
+use Pusher;
 use Swagger\Client\Api\PlanetaryInteractionApi;
 use Swagger\Client\ApiException;
 use Swagger\Client\Configuration;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Component\VarDumper\VarDumper;
 
 class EveEsiTestCommand extends BaseCommand
@@ -47,6 +52,9 @@ class EveEsiTestCommand extends BaseCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
+            $stopwatch = new Stopwatch();
+            $stopwatch->start('main-execute');
+
             $this->getLogger()->info('Starting...');
 
             // Get and loop through all users, and their respective toons:
@@ -202,6 +210,24 @@ class EveEsiTestCommand extends BaseCommand
             }
 
             $this->getLogger()->info('... done.');
+
+            $event = $stopwatch->stop('main-execute');
+
+            // Send push notification (testing for now):
+            $options = array(
+                'cluster' => 'eu',
+                'encrypted' => true
+            );
+            $pusher = new Pusher(
+                'bf7ea183e4c3ef2f62cc',
+                'ef06a7642a23f3e14ef5',
+                '364587',
+                $options
+            );
+
+            $data['message'] = 'Update ran, took '.($event->getDuration() / 1000).' seconds.';
+            $pusher->trigger('my-channel', 'my-event', $data);
+
         } catch (ApiException $e) {
             VarDumper::dump([
                 'body' => $e->getResponseBody(),
@@ -209,13 +235,7 @@ class EveEsiTestCommand extends BaseCommand
                 'code' => $e->getCode()
             ]);
         }
-//        $argument = $input->getArgument('argument');
-//
-//        if ($input->getOption('option')) {
-//            // ...
-//        }
-//
-//        $output->writeln('Command result.');
+
     }
 
     /**
