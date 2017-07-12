@@ -30,6 +30,11 @@ class Colony extends BaseEntity
     private $toon;
 
     /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Pin", mappedBy="colony")
+     */
+    private $pins;
+
+    /**
      * @var int
      *
      * @ORM\Column(name="planet_id", type="integer")
@@ -281,5 +286,46 @@ class Colony extends BaseEntity
     public function getToon()
     {
         return $this->toon;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->pins = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add pin
+     *
+     * @param \AppBundle\Entity\Pin $pin
+     *
+     * @return Colony
+     */
+    public function addPin(\AppBundle\Entity\Pin $pin)
+    {
+        $this->pins[] = $pin;
+
+        return $this;
+    }
+
+    /**
+     * Remove pin
+     *
+     * @param \AppBundle\Entity\Pin $pin
+     */
+    public function removePin(\AppBundle\Entity\Pin $pin)
+    {
+        $this->pins->removeElement($pin);
+    }
+
+    /**
+     * Get pins
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPins()
+    {
+        return $this->pins;
     }
 }

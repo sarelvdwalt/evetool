@@ -23,7 +23,7 @@ class Pin extends BaseEntity
     /**
      * @var Colony
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Colony")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Colony", inversedBy="pins")
      */
     private $colony;
 
