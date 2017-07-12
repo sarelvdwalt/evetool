@@ -113,8 +113,6 @@ class EveEsiTestCommand extends BaseCommand
                         $planet_result = $api_planetary_interaction->getCharactersCharacterIdPlanetsPlanetId($toon->getId(), $colony->getPlanetId());
 
                         foreach ($planet_result->getPins() as $one_pin) {
-                            VarDumper::dump($one_pin);
-
                             $pin = $em->getRepository('AppBundle:Pin')->find($one_pin->getPinId());
 
                             $this->getLogger()->info('Pin: #'.$one_pin->getPinId());
@@ -214,8 +212,6 @@ class EveEsiTestCommand extends BaseCommand
 
                         $em->persist($colony);
                         $em->flush();
-
-                        break 3;
                     }
                 }
             }
@@ -224,20 +220,22 @@ class EveEsiTestCommand extends BaseCommand
 
             $event = $stopwatch->stop('main-execute');
 
-            // Send push notification (testing for now):
-            $options = array(
-                'cluster' => 'eu',
-                'encrypted' => true
-            );
-            $pusher = new Pusher(
-                'bf7ea183e4c3ef2f62cc',
-                'ef06a7642a23f3e14ef5',
-                '364587',
-                $options
-            );
+            if ($event->getDuration() / 1000 >= 20) {
+                // Send push notification (testing for now):
+                $options = array(
+                    'cluster' => 'eu',
+                    'encrypted' => true
+                );
+                $pusher = new Pusher(
+                    'bf7ea183e4c3ef2f62cc',
+                    'ef06a7642a23f3e14ef5',
+                    '364587',
+                    $options
+                );
 
-            $data['message'] = 'Update ran, took '.($event->getDuration() / 1000).' seconds.';
-            $pusher->trigger('my-channel', 'my-event', $data);
+                $data['message'] = 'Update ran, took '.($event->getDuration() / 1000).' seconds.';
+                $pusher->trigger('my-channel', 'my-event', $data);
+            }
 
         } catch (ApiException $e) {
             VarDumper::dump([
