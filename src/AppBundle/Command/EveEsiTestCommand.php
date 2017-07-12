@@ -87,7 +87,9 @@ class EveEsiTestCommand extends BaseCommand
 
                     $api_planetary_interaction = new PlanetaryInteractionApi();
 
+                    $stopwatch->start('getCharactersCharacterIdPlanets');
                     $result = $api_planetary_interaction->getCharactersCharacterIdPlanets($toon->getId());
+                    $stopwatch->stop('getCharactersCharacterIdPlanets');
 
                     $this->getLogger()->info('Getting Colonies...');
 
@@ -110,7 +112,9 @@ class EveEsiTestCommand extends BaseCommand
 
                         $this->getLogger()->info('Processing Colony ' . $toon->getId() . '-' . $colony->getPlanetId() . '-' . $colony->getPlanetType());
 
+                        $stopwatch->start('getCharactersCharacterIdPlanetsPlanetId');
                         $planet_result = $api_planetary_interaction->getCharactersCharacterIdPlanetsPlanetId($toon->getId(), $colony->getPlanetId());
+                        $stopwatch->stop('getCharactersCharacterIdPlanetsPlanetId');
 
                         foreach ($planet_result->getPins() as $one_pin) {
                             $pin = $em->getRepository('AppBundle:Pin')->find($one_pin->getPinId());
@@ -219,6 +223,13 @@ class EveEsiTestCommand extends BaseCommand
             $this->getLogger()->info('... done.');
 
             $event = $stopwatch->stop('main-execute');
+
+            foreach (['getCharactersCharacterIdPlanets', 'getCharactersCharacterIdPlanetsPlanetId', 'main-execute'] as $item) {
+//                VarDumper::dump($stopwatch->getEvent('getCharactersCharacterIdPlanets'));
+//                VarDumper::dump($stopwatch->getEvent('getCharactersCharacterIdPlanets')->getDuration());
+
+                $this->getLogger()->alert('Call "'.$item.'" took '.($stopwatch->getEvent($item)->getDuration() / 1000).' seconds to run '.count($stopwatch->getEvent($item)->getPeriods()).' times.');
+            }
 
             if ($event->getDuration() / 1000 >= 20) {
                 // Send push notification (testing for now):
