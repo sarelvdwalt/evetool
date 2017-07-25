@@ -30,10 +30,11 @@ class DefaultController extends Controller
         $em = $this->getDoctrine()->getManager();
         $connection = $em->getConnection();
         $statement = $connection->prepare("SELECT ed.pin_id,
-       t.id,
        t.character_name,
+       c.toon_id,
        c.planet_id,
        c.solar_system_id,
+       c.id as colony_id,
        c.num_pins,
        c.planet_type,
        p.last_cycle_start,
@@ -43,46 +44,42 @@ class DefaultController extends Controller
        ed.product_type_id,
        ed.qty_per_cycle,
        timediff(p.expiry_time, :seedtime) time_till_end,
-       unix_timestamp(p.expiry_time)-unix_timestamp(:seedtime) AS unix_diff
+       unix_timestamp(p.expiry_time)-unix_timestamp(:seedtime) AS unix_diff,
+       round((1 - ((unix_timestamp(:seedtime) - unix_timestamp(p.install_time)) / (unix_timestamp(p.expiry_time) - unix_timestamp(p.install_time)))) * 100, 2) as percentage_left
 FROM pin_extractor_detail ed
 INNER JOIN pin p ON (ed.pin_id = p.id)
 INNER JOIN colony c ON (c.id = p.colony_id)
 INNER JOIN toon t ON (t.id = c.toon_id)
-ORDER BY t.character_name;");
+ORDER BY t.character_name, c.planet_id;");
         $statement->bindValue('seedtime', (new \DateTime('now', new \DateTimeZone('UTC')))->format('Y-m-d H:i:s'));
         $statement->execute();
         $results = $statement->fetchAll();
 
+        $summarizedResults = array();
+
         $now = new Carbon('now', new \DateTimeZone('UTC'));
-        foreach ($results as $i => $result) {
-            $results[$i]['diff_hours'] = $now->diffInHours(new Carbon($result['expiry_time']));
-            $results[$i]['diff_days'] = $now->diffInDays(new Carbon($result['expiry_time']));
+        foreach ($results as $result) {
+
+            $result['diff_hours'] = $now->diffInHours(new Carbon($result['expiry_time']));
+            $result['diff_days'] = $now->diffInDays(new Carbon($result['expiry_time']));
+
+            $thisToon = $em->getRepository('AppBundle:Toon')->find($result['toon_id']);
+            $toonUpdatedAt = $thisToon->getUpdatedAt();
+            /** @var $toonUpdatedAt \DateTime */
+
+            $summarizedResults[$result['toon_id']]['toon'] = $thisToon;
+            $summarizedResults[$result['toon_id']]['toon_update_age'] = $toonUpdatedAt->diff(new \DateTime())->format('%s');
+            $summarizedResults[$result['toon_id']]['colonies'][$result['colony_id']]['colony'] = $em->getRepository('AppBundle:Colony')->find($result['colony_id']);
+
+            // Add extractor pins as needed:
+            $summarizedResults[$result['toon_id']]['colonies'][$result['colony_id']]['extractor_pins'][] = $result;
         }
 
-//        VarDumper::dump($results);
-//        exit;
+//        VarDumper::dump($summarizedResults);exit;
 
-//
-//        try {
-//            foreach ($user->getToons() as $toon) {
-//                /** @var Toon $toon */
-//                $result = $api_planets->getCharactersCharacterIdPlanets($toon->getId(), null, $toon->getEsiAccessToken());
-//                VarDumper::dump($result);
-//            }
-//        } catch (\Exception $e) {
-//            echo 'Exception when calling AllianceApi->getAlliances: ', $e->getMessage(), PHP_EOL;
-//            VarDumper::dump($e);
-//        }
-//
-//        exit;
-//
-//
-//        VarDumper::dump($api_instance);
-//        exit;
-//
         return [
             'toon_count' => $user->getToons()->count(),
-            'colony_view' => $results
+            'colony_view' => $summarizedResults
         ];
     }
 
