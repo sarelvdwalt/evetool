@@ -30,7 +30,7 @@ class Pin extends BaseEntity
     /**
      * @var PinExtractorDetail
      *
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\PinExtractorDetail", mappedBy="pin")
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\PinExtractorDetail", mappedBy="pin", cascade={"remove"})
      */
     private $pin_extractor_detail;
 

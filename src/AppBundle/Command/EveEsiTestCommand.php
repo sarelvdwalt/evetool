@@ -74,6 +74,11 @@ class EveEsiTestCommand extends BaseCommand
                         'toon' => $toon
                     ]);
 
+                    $dbSideStack['colonies'] = array();
+                    $dbSideStack['pins'] = array();
+                    $dbSideStack['links'] = array();
+                    $dbSideStack['routes'] = array();
+
                     foreach ($tmp as $tmpOldColony) {
                         /** @var Colony $tmpOldColony */
                         $dbSideStack['colonies'][$tmpOldColony->getPlanetId()] = $tmpOldColony;
@@ -94,14 +99,15 @@ class EveEsiTestCommand extends BaseCommand
                     $this->getLogger()->info('Getting Colonies...');
 
                     foreach ($result as $one_colony) {
-                        $colony = $dbSideStack['colonies'][$one_colony->getPlanetId()];
+                        $colony = null;
+
+                        if (array_key_exists($one_colony->getPlanetId(), $dbSideStack['colonies'])) {
+                            $colony = $dbSideStack['colonies'][$one_colony->getPlanetId()];
+                        }
 
                         if (is_null($colony)) {
                             $colony = new Colony();
                             $colony->setToon($toon);
-                        } else {
-                            // Ensure that we are not left with this "found" colony in the list at the end
-                            unset($dbSideStack['colonies'][$one_colony->getPlanetId()]);
                         }
                         $colony->setLastUpdate($one_colony->getLastUpdate());
                         $colony->setNumPins($one_colony->getNumPins());
@@ -116,10 +122,19 @@ class EveEsiTestCommand extends BaseCommand
                         $planet_result = $api_planetary_interaction->getCharactersCharacterIdPlanetsPlanetId($toon->getId(), $colony->getPlanetId());
                         $stopwatch->stop('getCharactersCharacterIdPlanetsPlanetId');
 
+                        // Get all existing pins from DB:
+                        $tmpOldPins = $em->getRepository('AppBundle:Pin')->findBy([
+                            'colony' => $colony
+                        ]);
+                        foreach ($tmpOldPins as $tmpOldPin) {
+                            /** @var $tmpOldPin Pin */
+                            $dbSideStack['pins'][$tmpOldPin->getId() ] = $tmpOldPin;
+                        }
+
                         foreach ($planet_result->getPins() as $one_pin) {
                             $pin = $em->getRepository('AppBundle:Pin')->find($one_pin->getPinId());
 
-                            $this->getLogger()->info('Pin: #'.$one_pin->getPinId());
+//                            $this->getLogger()->info('Pin: #' . $one_pin->getPinId());
 
                             if (is_null($pin)) {
                                 $pin = new Pin();
@@ -173,6 +188,9 @@ class EveEsiTestCommand extends BaseCommand
                             }
 
                             $em->persist($pin);
+
+                            // Remove pin that's already been synced:
+                            unset($dbSideStack['pins'][$one_pin->getPinId()]);
                         }
 
                         // Links:
@@ -216,7 +234,21 @@ class EveEsiTestCommand extends BaseCommand
 
                         $em->persist($colony);
                         $em->flush();
+
+                        // Ensure that we are not left with this "found" colony in the list at the end
+                        unset($dbSideStack['colonies'][$one_colony->getPlanetId()]);
+
                     }
+
+                    // Delete all remaining colonies:
+                    VarDumper::dump($dbSideStack);
+                    
+                    // For now we're retrieving things before deleting them, but later on we should no longer have to retrieve anymore:
+                    foreach ($dbSideStack['pins'] as $pin_id => $pin) {
+                        $em->remove($pin);
+                    }
+
+                    $em->flush();
                 }
             }
 
@@ -228,7 +260,7 @@ class EveEsiTestCommand extends BaseCommand
 //                VarDumper::dump($stopwatch->getEvent('getCharactersCharacterIdPlanets'));
 //                VarDumper::dump($stopwatch->getEvent('getCharactersCharacterIdPlanets')->getDuration());
 
-                $this->getLogger()->alert('Call "'.$item.'" took '.($stopwatch->getEvent($item)->getDuration() / 1000).' seconds to run '.count($stopwatch->getEvent($item)->getPeriods()).' times.');
+                $this->getLogger()->alert('Call "' . $item . '" took ' . ($stopwatch->getEvent($item)->getDuration() / 1000) . ' seconds to run ' . count($stopwatch->getEvent($item)->getPeriods()) . ' times.');
             }
 
             if ($event->getDuration() / 1000 >= 20) {
@@ -244,7 +276,7 @@ class EveEsiTestCommand extends BaseCommand
                     $options
                 );
 
-                $data['message'] = 'Update ran, took '.($event->getDuration() / 1000).' seconds.';
+                $data['message'] = 'Update ran, took ' . ($event->getDuration() / 1000) . ' seconds.';
                 $pusher->trigger('my-channel', 'my-event', $data);
             }
 
