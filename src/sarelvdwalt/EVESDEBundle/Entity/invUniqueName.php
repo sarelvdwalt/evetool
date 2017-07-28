@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * invUniqueName
  *
- * @ORM\Table(name="invUniqueNames")
+ * @ORM\Table(name="eve_sde.invUniqueNames")
  * @ORM\Entity(repositoryClass="sarelvdwalt\EVESDEBundle\Repository\invUniqueNameRepository")
  */
 class invUniqueName

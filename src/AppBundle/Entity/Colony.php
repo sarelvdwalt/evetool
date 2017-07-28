@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use sarelvdwalt\EVESDEBundle\Entity\invUniqueName;
 use Symfony\Component\VarDumper\VarDumper;
 
 /**
@@ -33,6 +34,20 @@ class Colony extends BaseEntity
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Pin", mappedBy="colony")
      */
     private $pins;
+
+    /**
+     * @var invUniqueName
+     * @ORM\ManyToOne(targetEntity="sarelvdwalt\EVESDEBundle\Entity\invUniqueName", fetch="EAGER")
+     * @ORM\JoinColumn(name="planet_id", referencedColumnName="itemID")
+     */
+    private $invUniqueName;
+
+    /**
+     * @var invUniqueName
+     * @ORM\ManyToOne(targetEntity="sarelvdwalt\EVESDEBundle\Entity\invUniqueName", fetch="EAGER")
+     * @ORM\JoinColumn(name="solar_system_id", referencedColumnName="itemID")
+     */
+    private $systemUniqueName;
 
     /**
      * @var int
@@ -327,5 +342,53 @@ class Colony extends BaseEntity
     public function getPins()
     {
         return $this->pins;
+    }
+
+    /**
+     * Set invUniqueName
+     *
+     * @param \sarelvdwalt\EVESDEBundle\Entity\invUniqueName $invUniqueName
+     *
+     * @return Colony
+     */
+    public function setInvUniqueName(\sarelvdwalt\EVESDEBundle\Entity\invUniqueName $invUniqueName = null)
+    {
+        $this->invUniqueName = $invUniqueName;
+
+        return $this;
+    }
+
+    /**
+     * Get invUniqueName
+     *
+     * @return \sarelvdwalt\EVESDEBundle\Entity\invUniqueName
+     */
+    public function getInvUniqueName()
+    {
+        return $this->invUniqueName;
+    }
+
+    /**
+     * Set systemUniqueName
+     *
+     * @param \sarelvdwalt\EVESDEBundle\Entity\invUniqueName $systemUniqueName
+     *
+     * @return Colony
+     */
+    public function setSystemUniqueName(\sarelvdwalt\EVESDEBundle\Entity\invUniqueName $systemUniqueName = null)
+    {
+        $this->systemUniqueName = $systemUniqueName;
+
+        return $this;
+    }
+
+    /**
+     * Get systemUniqueName
+     *
+     * @return \sarelvdwalt\EVESDEBundle\Entity\invUniqueName
+     */
+    public function getSystemUniqueName()
+    {
+        return $this->systemUniqueName;
     }
 }

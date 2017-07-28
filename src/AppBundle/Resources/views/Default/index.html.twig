@@ -20,8 +20,8 @@
                     {% for colonyrow in toonrow.colonies %}
                         <tr>
                             <td>{{ toonrow.toon.characterName }}</td>
-                            <td>{{ colonyrow.colony.solarSystemId }}</td>
-                            <td>{{ colonyrow.colony.planetId }}</td>
+                            <td>{{ colonyrow.colony.systemUniqueName.itemName }}</td>
+                            <td>{{ colonyrow.colony.invUniqueName.itemName }}</td>
                             <td>{{ colonyrow.colony.planetType }}</td>
                             <td>
                                 {% for ep in colonyrow.extractor_pins %}
