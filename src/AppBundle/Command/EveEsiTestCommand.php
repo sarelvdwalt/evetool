@@ -13,6 +13,7 @@ use AppBundle\Entity\User;
 use Doctrine\Common\Persistence\ObjectManager;
 use GuzzleHttp\Client;
 use Pusher;
+use sarelvdwalt\EVESDEBundle\Entity\invUniqueName;
 use Swagger\Client\Api\PlanetaryInteractionApi;
 use Swagger\Client\ApiException;
 use Swagger\Client\Configuration;
@@ -112,8 +113,13 @@ class EveEsiTestCommand extends BaseCommand
                         $colony->setLastUpdate($one_colony->getLastUpdate());
                         $colony->setNumPins($one_colony->getNumPins());
                         $colony->setPlanetId($one_colony->getPlanetId());
+                        $invUniqueName = $em->getRepository('EVESDEBundle:invUniqueName')->find($one_colony->getPlanetId());
+                        $colony->setInvUniqueName($invUniqueName);
                         $colony->setPlanetType($one_colony->getPlanetType());
+
                         $colony->setSolarSystemId($one_colony->getSolarSystemId());
+                        $systemUniqueName = $em->getRepository('EVESDEBundle:invUniqueName')->find($one_colony->getSolarSystemId());
+                        $colony->setSystemUniqueName($systemUniqueName);
                         $colony->setUpgradeLevel($one_colony->getUpgradeLevel());
 
                         $this->getLogger()->info('Processing Colony ' . $toon->getId() . '-' . $colony->getPlanetId() . '-' . $colony->getPlanetType());
